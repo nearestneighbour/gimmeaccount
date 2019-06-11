@@ -1,0 +1,5 @@
+## When no account name is specified, generate a random name
+Afterwards the user can find their new account by entering their public key in a block explorer like bloks.io.
+
+## When launching, add a countdown that gives the first xxx users free accounts
+For example the first 100 users to create new accounts get their account for free, i.e. RAM is paid for by the contract. (how to prevent abuse?)
