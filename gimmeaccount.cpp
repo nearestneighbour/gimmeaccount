@@ -3,14 +3,17 @@
 using namespace eosio;
 
 [[eosio::action]]
-void gimmeaccount::testdecode(std::string pk) {
-    public_key pubkey = decode_pubkey(pk);
-    print_f(pubkey.data.begin());
-}
-
-[[eosio::action]]
-void gimmeaccount::testpk(public_key pk) {
-    print_f(pk.data.begin());
+void gimmeaccount::testdecode(std::string pks, public_key pko) {
+    public_key pubkey = decode_pubkey(pks);
+    for (i=0; i<33; i++) {
+        print_f(" "+std__to_string(pubkey.data[i]));
+    }
+    if (pubkey != pko) {
+        print_f('\n');
+        for (i=0; i<33; i++) {
+            print_f(" "+std__to_string(pko.data[i]));
+        }
+    }
 }
 
 [[eosio::on_notify("eosio.token::transfer")]]

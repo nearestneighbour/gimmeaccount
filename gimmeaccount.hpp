@@ -12,10 +12,7 @@ class [[eosio::contract("gimmeaccount")]] gimmeaccount : public contract {
             contract(receiver, code, ds) {}
 
         [[eosio::action]]
-        void testdecode(std::string pk);
-
-        [[eosio::action]]
-        void testpk(public_key pk);
+        void testdecode(std::string pks, public_key pko);
 
         [[eosio::on_notify("eosio.token::transfer")]]
         void on_transfer(name from, name to, asset quantity, std::string memo);
@@ -53,7 +50,7 @@ class [[eosio::contract("gimmeaccount")]] gimmeaccount : public contract {
                 datastr = datastr.substr(3);
             }
             check(datastr.length() == 50, "Public key str wrong length");
-            std::array<unsigned char, 37> r = DecodeBase58(datastr);
+            const std::array<unsigned char, 37> r = DecodeBase58(datastr);
             std::array<char, 33> pubkey_data;
             std::copy_n(r.begin(), 33, pubkey_data.begin());
             checksum160 pkcheck = ripemd160(reinterpret_cast<char*>(pubkey_data.data()), 33);

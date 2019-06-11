@@ -14,11 +14,11 @@ const char ALPHABET_MAP[128] = {
 };
 
 std::array<unsigned char, 37> DecodeBase58(std::string str) {
-    int len1 = 50;
+    int len = 50;
     std::array<unsigned char, 37> result;
     result[0] = 0;
     int resultlen = 1;
-    for (int i = 0; i < len1; i++) {
+    for (int i = 0; i < len; i++) {
         unsigned int carry = (unsigned int) ALPHABET_MAP[str[i]];
         for (int j = 0; j < resultlen; j++) {
             carry += (unsigned int) (result[j]) * 58;
@@ -31,7 +31,7 @@ std::array<unsigned char, 37> DecodeBase58(std::string str) {
         }
     }
 
-    for (int i = 0; i < len1 && str[i] == '1'; i++)
+    for (int i = 0; i < len && str[i] == '1'; i++)
         result[resultlen++] = 0;
 
     // Poorly coded, but guaranteed to work.
