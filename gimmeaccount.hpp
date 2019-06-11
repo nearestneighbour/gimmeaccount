@@ -12,12 +12,31 @@ class [[eosio::contract("gimmeaccount")]] gimmeaccount : public contract {
             contract(receiver, code, ds) {}
 
         [[eosio::action]]
-        void testdecode(std::string pks, public_key pko);
+        void testdecoding(std::string pkstr, public_key pkobj);
 
         [[eosio::on_notify("eosio.token::transfer")]]
         void on_transfer(name from, name to, asset quantity, std::string memo);
 
     private:
+        //Inspired by http://knowledge.cryptokylin.io/topics/115
+        public_key decode_pubkey(std::string pk_str) {
+            //Remove EOS prefix and check pubkey length
+            pk_str = pk_str.substr(3);
+            check(pk_str.length() == 50, "Public key str wrong length");
+
+            //Decode pubkey
+            const std::array<unsigned char, 37> decoded = DecodeBase58(pk_str);
+            std::array<char, 33> pk_data;
+            std::copy_n(decoded.begin(), 33, pk_data.begin());
+
+            //Evaluate checksum
+            checksum160 pk_cs = ripemd160(reinterpret_cast<char*>(pk_data.data()), 33);
+            std::array<uint8_t, 20> cs_data = pk_cs.extract_as_byte_array();
+            check(std::memcmp(cs_data.begin(), &decoded.end()[-4], 4) == 0, "Public key checksum mismatch");
+
+            return public_key{0, pk_data};
+        }
+
         struct key_weight {
             public_key key;
             uint16_t weight;
@@ -32,30 +51,14 @@ class [[eosio::contract("gimmeaccount")]] gimmeaccount : public contract {
         };
         struct authority {
             uint32_t threshold;
-            key_weight keys;
-            perm_weight accounts;
-            wait_weight waits;
+            std::vector<key_weight> keys;
+            std::vector<perm_weight> accounts;
+            std::vector<wait_weight> waits;
         };
-        struct accdata { // Newaccount parameters
+        struct newaccount { // Newaccount parameters
             name creator;
             name accname;
             authority owner;
             authority active;
         };
-
-        //I have no idea what I'm doing here
-        //http://knowledge.cryptokylin.io/topics/115
-        public_key decode_pubkey(std::string datastr) {
-            if (datastr.length() == 53) {
-                datastr = datastr.substr(3);
-            }
-            check(datastr.length() == 50, "Public key str wrong length");
-            const std::array<unsigned char, 37> r = DecodeBase58(datastr);
-            std::array<char, 33> pubkey_data;
-            std::copy_n(r.begin(), 33, pubkey_data.begin());
-            checksum160 pkcheck = ripemd160(reinterpret_cast<char*>(pubkey_data.data()), 33);
-            check(std::memcmp(&pkcheck, &r.end()[-4], 4) == 0, "Checksum mismatch");
-            public_key pk{0, pubkey_data};
-            return pk;
-        }
 };
