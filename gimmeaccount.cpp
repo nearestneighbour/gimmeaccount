@@ -1,15 +1,15 @@
-#include "createacc.hpp"
+#include "gimmeaccount.hpp"
 
-// gimmeaccount
-// givemeaccess
+using namespace eosio;
 
 [[eosio::action]]
-void createacc::helloworld(std::string bob) {
-    print_f("Hi, %\n", bob);
+void gimmeaccount::testaction(std::string pk) {
+    public_key pubkey = decode_pubkey(pk);
+    print_f(pubkey.data.begin());
 }
 
 [[eosio::on_notify("eosio.token::transfer")]]
-void createacc::on_transfer(name from, name to, asset quantity, std::string memo) {
+void gimmeaccount::on_transfer(name from, name to, asset quantity, std::string memo) {
     // Only act on incoming transactions, ignore outgoing
     if (to != get_self()) {
         return;
@@ -22,8 +22,7 @@ void createacc::on_transfer(name from, name to, asset quantity, std::string memo
     name accname = name(memo.substr(0,sep));
     std::string pubkeystr = memo.substr(sep+1);
     // Convert pkstr string to pubkey
-    public_key pubkey;
-    decode_pubkey(pubkeystr, signature{}, pubkey);
+    public_key pubkey = decode_pubkey(pubkeystr);
     // Create account
     authority auth = authority{
         1,
