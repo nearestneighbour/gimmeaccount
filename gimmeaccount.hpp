@@ -12,7 +12,10 @@ class [[eosio::contract("gimmeaccount")]] gimmeaccount : public contract {
             contract(receiver, code, ds) {}
 
         [[eosio::action]]
-        void testaction(std::string pk);
+        void testdecode(std::string pk);
+
+        [[eosio::action]]
+        void testpk(public_key pk);
 
         [[eosio::on_notify("eosio.token::transfer")]]
         void on_transfer(name from, name to, asset quantity, std::string memo);
