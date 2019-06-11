@@ -18,25 +18,10 @@ class [[eosio::contract("gimmeaccount")]] gimmeaccount : public contract {
         void on_transfer(name from, name to, asset quantity, std::string memo);
 
     private:
-        //Inspired by http://knowledge.cryptokylin.io/topics/115
-        public_key decode_pubkey(std::string pk_str) {
-            //Remove EOS prefix and check pubkey length
-            pk_str = pk_str.substr(3);
-            check(pk_str.length() == 50, "Public key str wrong length");
+        public_key decode_pubkey(std::string pk_str);
+        asset get_ram_price();
 
-            //Decode pubkey
-            const std::array<unsigned char, 37> decoded = DecodeBase58(pk_str);
-            std::array<char, 33> pk_data;
-            std::copy_n(decoded.begin(), 33, pk_data.begin());
-
-            //Evaluate checksum
-            checksum160 pk_cs = ripemd160(reinterpret_cast<char*>(pk_data.data()), 33);
-            std::array<uint8_t, 20> cs_data = pk_cs.extract_as_byte_array();
-            check(std::memcmp(cs_data.begin(), &decoded.end()[-4], 4) == 0, "Public key checksum mismatch");
-
-            return public_key{0, pk_data};
-        }
-
+        //Structs for newaccount action
         struct key_weight {
             public_key key;
             uint16_t weight;
@@ -61,4 +46,17 @@ class [[eosio::contract("gimmeaccount")]] gimmeaccount : public contract {
             authority owner;
             authority active;
         };
+
+        //Structs for RAM table/action
+        struct rammarket { //Inspired by https://github.com/GetScatter/CreateBridge/
+            asset supply;
+            struct connector {
+                asset balance;
+                double weight = .5;
+            };
+            connector base;
+            connector quote;
+            uint64_t primary_key()const {return supply.symbol.raw();}
+        };
+        symbol EOS_sym = symbol("EOS", 4);
 };
