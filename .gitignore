@@ -1,4 +1,3 @@
 test
-gimmeaccount.abi
-gimmeaccount.wasm
+gimmeaccount
 compile.sh
