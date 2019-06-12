@@ -3,3 +3,6 @@ Afterwards the user can find their new account by entering their public key in a
 
 ## When launching, add a countdown that gives the first xxx users free accounts
 For example the first 100 users to create new accounts get their account for free, i.e. RAM is paid for by the contract. (how to prevent abuse?)
+
+## Develop frontend for contract
+That shows step-by-step instructions, "generates" the memo etc. Also shows the number of free accounts left (see above), and the current cost of an account (and thus minimum EOS required to send).
