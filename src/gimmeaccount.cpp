@@ -23,14 +23,14 @@ void gimmeaccount::on_transfer(name from, name to, asset quantity, std::string m
     //Check tx details (memo should be [(12 characters),(53 charaters)])
     check(memo.length() == 66 && memo[12] == ',', "Memo format is wrong");
     asset ramcost = get_ram_price();
-    asset netcost = asset((float)0.1, EOS_sym);
-    asset cpucost = asset((float)0.1, EOS_sym);
+    asset netcost = asset(1000, EOS_sym);
+    asset cpucost = asset(1000, EOS_sym);
     check(quantity >= (ramcost + netcost + cpucost), "Amount of EOS too low");
     asset remaining = quantity - (ramcost+netcost+cpucost);
 
     //Check parameters
-    name accname = name(memo.substr(0,11));
-    check(!is_account(accname), "Account already exists");
+    name accname = name(memo.substr(0,12));
+    //check(!is_account(accname), "Account already exists");
     std::string pk_str = memo.substr(13);
     public_key pk_obj = decode_pubkey(pk_str);
 
@@ -63,7 +63,7 @@ void gimmeaccount::on_transfer(name from, name to, asset quantity, std::string m
         permission_level(get_self(), "active"_n),
         "eosio.token"_n,
         "transfer"_n,
-        std::make_tuple(get_self(), accname, remaining)
+        std::make_tuple(get_self(), accname, remaining, std::string(""))
     ).send();
 }
 
@@ -90,6 +90,7 @@ public_key gimmeaccount::decode_pubkey(std::string pk_str) {
 asset gimmeaccount::get_ram_price() {
     multi_index<"rammarket"_n, rammarket> rp(name("eosio"), name("eosio").value);
     auto it = rp.find(symbol("RAMCORE", 4).raw());
+    check(it != rp.end(), "Could not get RAM price");
     uint64_t base = it->base.balance.amount;
     uint64_t quote = it->quote.balance.amount;
     return asset(4096*(double)quote/base, EOS_sym);
