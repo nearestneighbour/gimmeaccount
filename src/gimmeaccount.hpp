@@ -4,12 +4,11 @@
 
 using namespace eosio;
 
-class [[eosio::contract("gimmeaccount")]] gimmeaccount : public contract {
+class [[eosio::contract]] gimmeaccount : public contract {
     public:
         gimmeaccount(name receiver, name code, datastream<const char*> ds):
             contract(receiver, code, ds) {}
 
-        //[[eosio::action]]
         void transfer(name from, name to, asset quantity, std::string memo);
 
     private:

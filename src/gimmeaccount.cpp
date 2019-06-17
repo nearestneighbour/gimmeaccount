@@ -5,16 +5,16 @@ using namespace eosio;
 
 /*
     Use the funds from an incoming EOS transaction to create an account
-    based on information provided in the memo of the transaction.
+    based on information provided in the memo of the transaction. Function is
+    not labeled as [[eosio::action]] because it should be ignored by abigen.
 */
-//[[eosio::action]]
 void gimmeaccount::transfer(name from, name to, asset quantity, std::string memo) {
     // Only act on incoming EOS transactions, ignore everything else
-    check(get_first_receiver()=="eosio.token"_n, "Only EOS transfers");
     if (to != get_self()) {
         return;
     }
-
+    // Check asset (only really necessary on testnet)
+    check(quantity.symbol == EOS_sym, "Wrong currency");
     // Check tx memo - should be "<12 characters>,<53 charaters>"
     check(memo.length() == 66 && memo[12] == ',',
         "Memo should be <accname(12chr)>,<pubkey(53chr)>");
@@ -22,7 +22,7 @@ void gimmeaccount::transfer(name from, name to, asset quantity, std::string memo
     asset ramcost = get_ram_price();
     asset netcost = asset(1000, EOS_sym); // Use 0.1 EOS for NET/CPU
     asset cpucost = asset(1000, EOS_sym);
-    check(quantity >= (ramcost + netcost + cpucost), "Amount of EOS too low");
+    check(quantity >= (ramcost + netcost + cpucost), "Amount too low");
     asset remaining = quantity - (ramcost+netcost+cpucost);
 
     // Check account name and public key
@@ -88,10 +88,10 @@ asset gimmeaccount::get_ram_price() {
     return asset((double)4096*quote/base, EOS_sym);
 }
 
-//Necessary to avoid "contract with no actions" error when compiling
+//Custom dispatcher to avoid "contract with no actions" error when compiling
 extern "C" {
     void apply(uint64_t receiver, uint64_t code, uint64_t action) {
-        if (action == "transfer"_n.value) {
+        if (action == "transfer"_n.value && code == "eosio.token"_n.value) {
             execute_action(name(receiver), name(code), &gimmeaccount::transfer);
         }
     }
