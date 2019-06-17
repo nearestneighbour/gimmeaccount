@@ -9,11 +9,8 @@ class [[eosio::contract("gimmeaccount")]] gimmeaccount : public contract {
         gimmeaccount(name receiver, name code, datastream<const char*> ds):
             contract(receiver, code, ds) {}
 
-        [[eosio::on_notify("eosio.token::transfer")]]
-        void on_transfer(name from, name to, asset quantity, std::string memo);
-
-        [[eosio::action]]
-        void testdecoding(std::string pkstr, public_key pkobj);
+        //[[eosio::action]]
+        void transfer(name from, name to, asset quantity, std::string memo);
 
     private:
         public_key decode_pubkey(std::string pk_str);
