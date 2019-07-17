@@ -14,11 +14,13 @@ Simple as that - first the account name, then a comma, then the public key. Make
 
 Want to know more about accounts and keys before you create your own? This is a great explanation of how this all works on EOS and how EOS accounts are different from traditional private/public key pairs you use with other cryptocurrencies:
 
-<eos account explanation>
+(link coming soon)
 
 ## No fees
 
-GimmeAccount does not charge any fees for account creation - 100% of the EOS you send to the contract will be forwarded to your new account. The amount of EOS necessary for creating an account is the price of 4 KiB of RAM, which is usually around 0.4 EOS, plus 0.2 EOS for allocating NET/CPU resources. So the minimum amount of EOS you should send to the account is around 0.6 EOS, but for the exact number see: <account price>.
+GimmeAccount does not charge any fees for account creation - 100% of the EOS you send to the contract will be forwarded to your new account. The amount of EOS necessary for creating an account is the price of 4 KiB of RAM, which is usually around 0.4 EOS, plus 0.2 EOS for allocating NET/CPU resources. So the minimum amount of EOS you should send to the account is around 0.6 EOS, but for the exact number see:
+
+(link coming soon)
 
 If you send more than the minimum required, the excess will be sent to your new account. If you send less than the minimum required, the transaction will fail and the coins will not leave the wallet they were in.
 
